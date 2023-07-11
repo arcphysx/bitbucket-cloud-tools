@@ -3,7 +3,7 @@ import { CodeReviewSummaryRequest } from "./dto/request/CodeReviewSummary.reques
 import { BitbucketCredential } from "src/shared-module/bitbucket/dto/BitbucketCredential.interface";
 import { BitbucketService } from "src/shared-module/bitbucket/bitbucket.service";
 import { PullRequestState } from "src/shared-module/enum/PullRequestState.enum";
-import moment from 'moment'
+import { CodeReviewSummaryResponse } from "./dto/response/CodeReviewSummary.response";
 
 @Injectable()
 export class KpiService {
@@ -11,6 +11,9 @@ export class KpiService {
 
     async getCodeReviewActivenessSummaryForUser(credential: BitbucketCredential, codeReviewSummaryRequest: CodeReviewSummaryRequest) {
         let prList = {}
+        let totalPrCount = 0
+        let totalSelfPr = 0
+        let totalReviewedByUser = 0
         for (let i = 0; i < codeReviewSummaryRequest.repoSlug.length; i++) {
             const element = codeReviewSummaryRequest.repoSlug[i];
             let stillAfterStartDate = true
@@ -37,6 +40,11 @@ export class KpiService {
                     prCreatedDate.setUTCHours(0,0,0,0)
                     if(prCreatedDate <= endDate){
                         subPrList.push(element)
+                        if(element.author.uuid == codeReviewSummaryRequest.summaryForUserId) totalSelfPr += 1
+                        else{
+                            let reviewerUuidList = element.participants.filter(i => i.user.uuid == codeReviewSummaryRequest.summaryForUserId && i.approved == true)
+                            if(reviewerUuidList.length > 0) totalReviewedByUser += 1
+                        }
                     }
                     if(prCreatedDate < startDate){
                         stillAfterStartDate = false
@@ -44,6 +52,15 @@ export class KpiService {
                 }
             }
             prList[element] = subPrList
+            totalPrCount += subPrList.length
         }
+        
+        return {
+            totalPrCount: totalPrCount,
+            totalReviewedByUser: totalReviewedByUser,
+            totalSelfPr: totalSelfPr,
+            activeness: (totalReviewedByUser*1.0)/((totalPrCount - totalSelfPr)*1.0),
+            contributeness: (totalSelfPr*1.0)/(totalPrCount*1.0)
+        } as CodeReviewSummaryResponse
     }
 }
