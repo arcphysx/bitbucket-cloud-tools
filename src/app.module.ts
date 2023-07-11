@@ -7,7 +7,7 @@ import { KpiModule } from './module/kpi/kpi.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    KpiModule
+    KpiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

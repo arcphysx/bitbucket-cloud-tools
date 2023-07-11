@@ -5,5 +5,6 @@ import { BitbucketService } from "./bitbucket.service";
     imports: [],
     controllers: [],
     providers: [BitbucketService],
+    exports: [BitbucketService]
 })
 export class BitbucketModule { }
