@@ -5,7 +5,7 @@ import { Bitbucket } from 'bitbucket'
 @Injectable()
 export class BitbucketService {
 
-    async getPullRequestListByWorkspace(credential: BitbucketCredential, workspace: string, repo_slug: string){
+    async getPullRequestListByWorkspaceAndRepoSlug(credential: BitbucketCredential, workspace: string, repo_slug: string){
         const bitbucketSdk = new Bitbucket({auth: credential})
         let prList = await bitbucketSdk.pullrequests.list({workspace: workspace, repo_slug})
         return prList
