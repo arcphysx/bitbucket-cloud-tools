@@ -12,4 +12,16 @@ export class BitbucketService {
         return prList
     }
 
+    async getUserInfoFromCredential(credential: BitbucketCredential){
+        const bitbucketSdk = new Bitbucket({auth: credential})
+        let userInfo = await bitbucketSdk.user.get({})
+        console.log(userInfo)
+        return userInfo.data
+    }
+
+    async getDefaultReviewerListByWorkspaceAndRepoSlug(credential: BitbucketCredential, workspace: string, repo_slug: string, page: number = 1, pagelen: number = 10){
+        const bitbucketSdk = new Bitbucket({auth: credential})
+        let list = await bitbucketSdk.repositories.listDefaultReviewers({workspace: workspace, repo_slug: repo_slug, page: page.toString(), pagelen: pagelen })
+        return list.data
+    }
 }

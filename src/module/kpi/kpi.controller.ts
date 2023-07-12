@@ -15,7 +15,6 @@ export class KpiController {
   @ApiOkResponse()
   @ApiBasicAuth('bitbucket-credentials')
   async summaryCodeReviewActiveness(@Headers() headers, @Body() codeReviewSummaryRequest: CodeReviewSummaryRequest) {
-    console.log()
     let response = this.kpiService.getCodeReviewActivenessSummaryForUser(BasicAuthDecoder.decode(headers['authorization']) as BitbucketCredential, codeReviewSummaryRequest)
     return response
   }
