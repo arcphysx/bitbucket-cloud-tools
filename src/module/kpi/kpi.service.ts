@@ -38,6 +38,10 @@ export class KpiService {
                     startDate.setUTCHours(0,0,0,0)
                     let prCreatedDate = new Date(element.created_on)
                     prCreatedDate.setUTCHours(0,0,0,0)
+                    if(prCreatedDate < startDate){
+                        stillAfterStartDate = false
+                        break
+                    }
                     if(prCreatedDate <= endDate){
                         subPrList.push(element)
                         if(element.author.uuid == codeReviewSummaryRequest.summaryForUserId) totalSelfPr += 1
@@ -45,9 +49,6 @@ export class KpiService {
                             let reviewerUuidList = element.participants.filter(i => i.user.uuid == codeReviewSummaryRequest.summaryForUserId && i.approved == true)
                             if(reviewerUuidList.length > 0) totalReviewedByUser += 1
                         }
-                    }
-                    if(prCreatedDate < startDate){
-                        stillAfterStartDate = false
                     }
                 }
             }
@@ -59,8 +60,8 @@ export class KpiService {
             totalPrCount: totalPrCount,
             totalReviewedByUser: totalReviewedByUser,
             totalSelfPr: totalSelfPr,
-            activeness: (totalReviewedByUser*1.0)/((totalPrCount - totalSelfPr)*1.0),
-            contributeness: (totalSelfPr*1.0)/(totalPrCount*1.0)
+            activeness: (totalReviewedByUser*1.0)/((totalPrCount - totalSelfPr)*1.0) || 0,
+            contributeness: (totalSelfPr*1.0)/(totalPrCount*1.0) || 0
         } as CodeReviewSummaryResponse
     }
 }
